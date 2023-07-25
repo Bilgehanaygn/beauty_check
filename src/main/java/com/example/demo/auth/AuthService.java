@@ -1,25 +1,24 @@
-package com.example.demo.user;
+package com.example.demo.auth;
 
-import com.example.demo.auth.LoginRequest;
+
 import com.example.demo.config.JwtService;
-import com.example.demo.ortak.messages.MessageResponse;
-import com.example.demo.ortak.messages.MessageType;
 import com.example.demo.token.Token;
 import com.example.demo.token.TokenRepository;
+import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import net.bytebuddy.utility.RandomString;
+
 import java.util.Date;
 import java.util.HashMap;
 
-
 @Service
-public class UserService {
-
+public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
@@ -35,7 +34,8 @@ public class UserService {
     @Autowired
     private TokenRepository tokenRepository;
 
-    public MessageResponse login(LoginRequest loginRequest){
+
+    public AuthResponse login(LoginRequest loginRequest){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.phoneNum(),
@@ -57,10 +57,10 @@ public class UserService {
 
         tokenRepository.save(token);
 
-        return new MessageResponse("basarili", MessageType.INFO);
+        return AuthResponse.builder().accessToken(jwt).build();
     }
 
-    public MessageResponse register(String phoneNum){
+    public String register(String phoneNum){
         User user = new User(null, phoneNum, null, null);
         String otp = generateOneTimePassword(user);
         String encodedOtp = encodeOneTimePassword(otp);
@@ -69,7 +69,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        return new MessageResponse("Success: " + otp, MessageType.INFO);
+        return otp;
     }
 
     private String generateOneTimePassword(User user){

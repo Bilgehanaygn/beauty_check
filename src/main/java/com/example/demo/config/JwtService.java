@@ -22,7 +22,6 @@ public class JwtService {
 
     private long jwtExpiration = 86400000;
 
-
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
     }
@@ -37,13 +36,13 @@ public class JwtService {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration){
+    public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails){
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + this.jwtExpiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

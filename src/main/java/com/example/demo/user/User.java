@@ -3,6 +3,8 @@ package com.example.demo.user;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +30,10 @@ public class User implements UserDetails {
     private String otp;
 
     private Date otpRequestedTime;
+
+    public User(){
+        this.phoneNum = "";
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
