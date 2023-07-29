@@ -2,6 +2,7 @@ package com.example.demo.auth;
 
 import com.example.demo.ortak.messages.MessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest loginRequest){
-        return authService.login(loginRequest);
+    public AuthResponse login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
+        return authService.login(loginRequest, response);
     }
 }

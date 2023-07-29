@@ -1,17 +1,23 @@
 package com.example.demo.product;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.demo.sms.TwilioService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/product")
+@RequestMapping("api/v1/product")
 public class ProductController {
 
     private ProductCrudUseCase productCrudUseCase;
-    public ProductController(ProductCrudUseCase productCrudUseCase){
+    private TwilioService twilioService;
+    public ProductController(ProductCrudUseCase productCrudUseCase, TwilioService twilioService){
         this.productCrudUseCase = productCrudUseCase;
+        this.twilioService = twilioService;
+    }
+
+
+    @GetMapping
+    public String test(){
+        return twilioService.showEnvironmentVariable("isim");
     }
 
     @PostMapping

@@ -6,8 +6,11 @@ import com.example.demo.token.Token;
 import com.example.demo.token.TokenRepository;
 import com.example.demo.user.User;
 import com.example.demo.user.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuthService {
@@ -34,8 +38,10 @@ public class AuthService {
     @Autowired
     private TokenRepository tokenRepository;
 
+    @Value("${application.domain}")
+    private String domain;
 
-    public AuthResponse login(LoginRequest loginRequest){
+    public AuthResponse login(LoginRequest loginRequest, HttpServletResponse response){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.phoneNum(),
@@ -57,7 +63,23 @@ public class AuthService {
 
         tokenRepository.save(token);
 
+        ResponseCookie cookie = createCookie(jwt);
+        response.addHeader("Set-Cookie", cookie.toString());
+
         return AuthResponse.builder().accessToken(jwt).build();
+    }
+
+    private ResponseCookie createCookie(String jwt){
+        ResponseCookie cookie = ResponseCookie.from("token", jwt)
+                .sameSite("Strict")
+                .secure(false)
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(jwtService.getJwtExpiration()))
+                .path("/")
+                .domain(this.domain)
+                .httpOnly(true)
+                .build();
+
+        return cookie;
     }
 
     public String register(String phoneNum){
