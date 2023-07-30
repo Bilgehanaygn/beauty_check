@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -27,12 +28,21 @@ public class User implements UserDetails {
     @NotNull
     private String phoneNum;
 
+    private String name;
+
+    private Integer age;
+
     private String otp;
 
     private Date otpRequestedTime;
 
     public User(){
         this.phoneNum = "";
+    }
+
+
+    public UserViewModel entityToViewModel(){
+        return new UserViewModel(this.getPhoneNum(), this.getName(), this.getAge());
     }
 
     @Override

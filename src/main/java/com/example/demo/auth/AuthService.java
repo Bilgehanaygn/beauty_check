@@ -6,8 +6,6 @@ import com.example.demo.token.Token;
 import com.example.demo.token.TokenRepository;
 import com.example.demo.user.User;
 import com.example.demo.user.UserRepository;
-import jakarta.servlet.http.HttpServletResponse;
-import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -41,7 +40,7 @@ public class AuthService {
     @Value("${application.domain}")
     private String domain;
 
-    public AuthResponse login(LoginRequest loginRequest, HttpServletResponse response){
+    public String login(LoginRequest loginRequest){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.phoneNum(),
@@ -63,13 +62,10 @@ public class AuthService {
 
         tokenRepository.save(token);
 
-        ResponseCookie cookie = createCookie(jwt);
-        response.addHeader("Set-Cookie", cookie.toString());
-
-        return AuthResponse.builder().accessToken(jwt).build();
+        return jwt;
     }
 
-    private ResponseCookie createCookie(String jwt){
+    public ResponseCookie createCookie(String jwt){
         ResponseCookie cookie = ResponseCookie.from("token", jwt)
                 .sameSite("Strict")
                 .secure(false)
@@ -83,8 +79,8 @@ public class AuthService {
     }
 
     public String register(String phoneNum){
-        User user = new User(null, phoneNum, null, null);
-        String otp = generateOneTimePassword(user);
+        User user = new User(null, phoneNum, null, null, null, null);
+        String otp = generateOneTimePassword();
         String encodedOtp = encodeOneTimePassword(otp);
         user.setOtp(encodedOtp);
         user.setOtpRequestedTime(new Date());
@@ -94,10 +90,14 @@ public class AuthService {
         return otp;
     }
 
-    private String generateOneTimePassword(User user){
-        String otp = RandomString.make(8);
+    public static String generateOneTimePassword() {
+        // It will generate 6 digit random Number.
+        // from 0 to 999999
+        Random rnd = new Random();
+        int number = rnd.nextInt(999999);
 
-        return otp;
+        // this will convert any number sequence into 6 character.
+        return String.format("%06d", number);
     }
 
     private String encodeOneTimePassword(String otp){

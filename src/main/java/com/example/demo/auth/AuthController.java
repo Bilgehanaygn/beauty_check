@@ -1,8 +1,11 @@
 package com.example.demo.auth;
 
 import com.example.demo.ortak.messages.MessageResponse;
+import com.example.demo.user.UserViewModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -25,6 +28,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
-        return authService.login(loginRequest, response);
+        String jwt = authService.login(loginRequest);
+        ResponseCookie cookie = authService.createCookie(jwt);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return AuthResponse.builder().accessToken(jwt).build();
     }
 }

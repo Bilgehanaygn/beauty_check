@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import net.bytebuddy.utility.RandomString;
@@ -61,7 +63,7 @@ public class UserService {
     }
 
     public MessageResponse register(String phoneNum){
-        User user = new User(null, phoneNum, null, null);
+        User user = new User(null, phoneNum, null, null, null, null);
         String otp = generateOneTimePassword(user);
         String encodedOtp = encodeOneTimePassword(otp);
         user.setOtp(encodedOtp);
@@ -70,6 +72,15 @@ public class UserService {
         userRepository.save(user);
 
         return new MessageResponse("Success: " + otp, MessageType.INFO);
+    }
+
+    public UserViewModel getLoggedInUser(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof String){
+            return null;
+        }
+
+        return ((User)principal).entityToViewModel();
     }
 
     private String generateOneTimePassword(User user){

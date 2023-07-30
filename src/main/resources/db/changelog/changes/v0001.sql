@@ -18,6 +18,8 @@ create table "product_attach_label"(
 create table "_user"(
     id bigserial not null,
     phone_num varchar(20) not null,
+    name varchar(20),
+    age INTEGER,
     otp varchar(255),
     otp_requested_time date,
     primary key (id)
