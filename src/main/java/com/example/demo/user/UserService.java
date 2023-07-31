@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import net.bytebuddy.utility.RandomString;
@@ -27,52 +27,6 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private TokenRepository tokenRepository;
-
-    public MessageResponse login(LoginRequest loginRequest){
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.phoneNum(),
-                        loginRequest.otp()
-                )
-        );
-
-        var user = userRepository.findByPhoneNum(loginRequest.phoneNum()).orElseThrow();
-        var extraClaims = new HashMap<String, Object>();
-        extraClaims.put("deneme keyi", "deneme degeri");
-        var jwt = jwtService.buildToken(extraClaims, user);
-
-        var token = Token.builder()
-                .user(user)
-                .token(jwt)
-                .expired(false)
-                .revoked(false)
-                .build();
-
-        tokenRepository.save(token);
-
-        return new MessageResponse("basarili", MessageType.INFO);
-    }
-
-    public MessageResponse register(String phoneNum){
-        User user = new User(null, phoneNum, null, null, null, null);
-        String otp = generateOneTimePassword(user);
-        String encodedOtp = encodeOneTimePassword(otp);
-        user.setOtp(encodedOtp);
-        user.setOtpRequestedTime(new Date());
-
-        userRepository.save(user);
-
-        return new MessageResponse("Success: " + otp, MessageType.INFO);
-    }
 
     public UserViewModel getLoggedInUser(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -90,7 +44,7 @@ public class UserService {
     }
 
     private String encodeOneTimePassword(String otp){
-        String encodedOtp = passwordEncoder.encode(otp);
+        String encodedOtp = this.passwordEncoder.encode(otp);
 
         return encodedOtp;
     }

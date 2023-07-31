@@ -15,7 +15,7 @@ public class UserController {
     public UserController(UserService userService){
         this.userService = userService;
     }
-    @GetMapping
+    @GetMapping("/getLoggedInUser")
     public UserViewModel getLoggedInUser(){
         return userService.getLoggedInUser();
     }

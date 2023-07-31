@@ -1,7 +1,9 @@
 package com.example.demo.config;
 
+import com.example.demo.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.example.demo.token.TokenRepository;
+import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
 
@@ -44,20 +47,16 @@ public class JwtAuthenticationFiler extends OncePerRequestFilter {
         response.addHeader("Access-Control-Allow-Credentials", "true");
         response.addIntHeader("Access-Control-Max-Age", 10);
 
+
+        //if the request is sent to /auth endpoint, ignore authorization filter
         if(request.getServletPath().contains("/api/v1/auth")){
             filterChain.doFilter(request, response);
             return;
         }
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
+
+        final String jwt = tokenExtractor(request);
         final String userPhoneNum;
 
-        if(authHeader == null || !authHeader.startsWith("Bearer")){
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        jwt = authHeader.substring(7);
         userPhoneNum = jwtService.extractUsername(jwt);
         //user phonenum is not null but user is not authenticated
         if(userPhoneNum != null && SecurityContextHolder.getContext().getAuthentication() == null){
@@ -76,5 +75,10 @@ public class JwtAuthenticationFiler extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    public String tokenExtractor(HttpServletRequest request){
+        final Cookie cookie = WebUtils.getCookie(request, "token");
+        return (cookie == null) ? null : cookie.getValue();
     }
 }
