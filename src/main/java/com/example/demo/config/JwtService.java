@@ -1,11 +1,11 @@
 package com.example.demo.config;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,28 +17,39 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret-key}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
     private long jwtExpiration;
+
+    public JwtService(){
+        Dotenv dotenv = Dotenv.load();
+        this.secretKey = dotenv.get("jwt.secret-key");
+        String jwtExpirationFromDotenv = dotenv.get("jwt.expiration");
+        if(jwtExpirationFromDotenv != null){
+            this.jwtExpiration = Long.parseLong(jwtExpirationFromDotenv);
+        }
+        else{
+            throw new RuntimeException("dot env cant read the value of key jwt.expiration");
+        }
+    }
+
 
     public long getJwtExpiration(){
         return this.jwtExpiration;
     }
 
-    public String extractUsername(String token){
-        return extractClaim(token, Claims::getSubject);
+    public String extractUsername(String jwt){
+        return extractClaim(jwt, Claims::getSubject);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
-        final Claims claims = extractAllClaims(token);
+    public <T> T extractClaim(String jwt, Function<Claims, T> claimsResolver){
+        final Claims claims = extractAllClaims(jwt);
         return claimsResolver.apply(claims);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails){
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public boolean isTokenValid(String jwt, UserDetails userDetails){
+        final String username = extractUsername(jwt);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(jwt);
     }
 
     public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails){

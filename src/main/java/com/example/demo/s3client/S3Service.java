@@ -30,11 +30,13 @@ public class S3Service {
 
     private final String bucketName = "actualphotobucket";
 
-    public MessageResponse putImageToS3Bucket(String imageId, MultipartFile file){
+
+    public MessageResponse putImageToS3Bucket(String imageName, MultipartFile file){
         // assume no chance of failing
+        //generate an UUID image name with a trailing file format name
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key(imageId+"."+file.getContentType().split("/")[1])
+                .key(imageName+"."+file.getContentType().split("/")[1])
                 .contentType(file.getContentType())
                 .build();
         try{
@@ -46,10 +48,10 @@ public class S3Service {
         }
     }
 
-    public String getTempLinkForImage(String imageId){
+    public String getTempLinkForImage(String imageName){
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
-                .key(imageId)
+                .key(imageName)
                 .build();
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(5))
@@ -62,10 +64,10 @@ public class S3Service {
         return presignedObject.url().toString();
     }
 
-    public byte[] getObject(String imageId){
+    public byte[] getObject(String imageName){
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
-                .key(imageId)
+                .key(imageName)
                 .build();
 
         try{
