@@ -41,12 +41,17 @@ public class JwtAuthenticationFiler extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         response.addHeader("Access-Control-Allow-Origin", fullDomain);
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH, HEAD");
+        response.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH, HEAD, OPTIONS");
         response.addHeader("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
         response.addHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin, Access-Control-Allow-Credentials");
         response.addHeader("Access-Control-Allow-Credentials", "true");
         response.addIntHeader("Access-Control-Max-Age", 10);
 
+        //no need jwt filter if the request is a preflight/options
+        if (request.getMethod().equals("OPTIONS")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
 
         //if the request is sent to /auth endpoint, ignore authorization filter
         if(request.getServletPath().contains("/api/v1/auth")){

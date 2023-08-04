@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -69,7 +70,16 @@ public class AuthService {
     }
 
     public String register(String phoneNum){
-        User user = new User(null, phoneNum, null, null, null, null);
+        //if user does not exist create new one, if does just return it
+        User user;
+        Optional<User> existingUser = userRepository.findByPhoneNum(phoneNum);
+        if(existingUser.isPresent()){
+            user = existingUser.get();
+        }
+        else{
+            user = new User(null, phoneNum, null, null, null, null);
+        }
+
         String otp = generateOneTimePassword();
         String encodedOtp = encodeOneTimePassword(otp);
         user.setOtp(encodedOtp);
