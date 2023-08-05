@@ -5,12 +5,15 @@ import com.example.demo.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Cascade;
 import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Data
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name="_image")
 public class Image {
 
@@ -35,5 +38,8 @@ public class Image {
 
     @Enumerated(EnumType.STRING)
     private Description description;
+
+
+    public Image(){}
 
 }

@@ -38,6 +38,7 @@ public class ApplicationConfig {
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
                 return userRepository.findByPhoneNum(username).orElseThrow(()->new UsernameNotFoundException("User not found"));
             }
+
         };
 
     }

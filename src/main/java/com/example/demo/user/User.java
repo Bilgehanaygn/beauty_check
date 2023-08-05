@@ -8,10 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 
 @Entity
@@ -36,18 +38,23 @@ public class User implements UserDetails {
 
     private Date otpRequestedTime;
 
+    @NotNull
+    @Enumerated(EnumType.ORDINAL)
+    private Role role;
+
     public User(){
         this.phoneNum = "";
     }
 
 
     public UserViewModel entityToViewModel(){
-        return new UserViewModel(this.getPhoneNum(), this.getName(), this.getAge());
+        return new UserViewModel(this.getPhoneNum(), this.getName(), this.getAge(), this.role.name());
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+
+        return List.of(new SimpleGrantedAuthority(this.role.getAuthority()));
     }
 
     @Override

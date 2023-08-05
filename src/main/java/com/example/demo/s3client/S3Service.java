@@ -36,7 +36,7 @@ public class S3Service {
         //generate an UUID image name with a trailing file format name
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key(imageName+"."+file.getContentType().split("/")[1])
+                .key(imageName)
                 .contentType(file.getContentType())
                 .build();
         try{

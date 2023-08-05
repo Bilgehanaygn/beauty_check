@@ -22,6 +22,7 @@ create table "_user"(
     age INTEGER,
     otp varchar(255),
     otp_requested_time date,
+    role varchar(20),
     primary key (id)
 );
 

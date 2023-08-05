@@ -6,7 +6,10 @@ import com.example.demo.ortak.messages.MessageType;
 import com.example.demo.s3client.S3Service;
 import com.example.demo.user.User;
 import com.example.demo.user.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,7 +49,7 @@ public class ImageService {
         StringBuilder imageNameBuilder = new StringBuilder();
         String randomId = UUID.randomUUID().toString();
         String imageTypeName = file.getContentType().split("/")[1];
-        imageNameBuilder.append(randomId).append(imageTypeName);
+        imageNameBuilder.append(randomId).append(".").append(imageTypeName);
 
         return imageNameBuilder.toString();
     }
@@ -55,10 +58,10 @@ public class ImageService {
     public String getImageAccessLink(String imageName){
         User user = userService.getCurrentlyLoggedInUser();
 
-        Image image = imageRepository.findByName(imageName);
+        Image image = imageRepository.findByName(imageName).orElseThrow(()->new EntityNotFoundException("ur_image_not_found"));
 
-        if(image.getUser().equals(user)){
-            throw new RuntimeException("ur_unauthorized_request");
+        if(user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) &&  !image.getUser().equals(user)){
+            throw new AccessDeniedException("ur_unauthorized_request");
         }
 
         return s3Service.getTempLinkForImage(imageName);
