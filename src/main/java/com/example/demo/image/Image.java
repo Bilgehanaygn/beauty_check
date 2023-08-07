@@ -5,10 +5,11 @@ import com.example.demo.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Cascade;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -24,22 +25,46 @@ public class Image {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name="user_id")
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @JoinColumn(name="user_id", nullable = false)
+    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
     private User user;
 
     @NotNull
     private String name;
 
-    //Reviewer should be added
+    @ManyToOne
+    @JoinColumn(name="reviewer_id", nullable = true)
+    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
+    private User reviewer;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Point point;
 
     @Enumerated(EnumType.STRING)
-    private Description description;
+    @ElementCollection(targetClass = Tag.class, fetch = FetchType.EAGER)
+    @CollectionTable(name="_image_tags", joinColumns = @JoinColumn(name="image_id"))
+    @Column(name = "tag")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<Tag> tags;
+
+    @Enumerated(EnumType.ORDINAL)
+    private Status status;
 
 
     public Image(){}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

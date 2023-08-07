@@ -17,18 +17,21 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public MessageResponse handleEntityNotFoundException(EntityNotFoundException entityNotFoundException){
+        System.out.println(entityNotFoundException.getMessage());
         return new MessageResponse("Item not found.", MessageType.ERROR);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public MessageResponse handleAccessDeniedException(AccessDeniedException accessDeniedException){
+        System.out.println(accessDeniedException.getMessage());
         return new MessageResponse("ur_unauthorized_request", MessageType.ERROR);
     }
 
     @ExceptionHandler(value = {RuntimeException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public MessageResponse handleRuntimeException(RuntimeException runtimeException){
+        System.out.println(runtimeException.getMessage());
         return new MessageResponse("internal server error.", MessageType.ERROR);
     }
 }

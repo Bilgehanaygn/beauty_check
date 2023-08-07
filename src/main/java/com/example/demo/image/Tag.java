@@ -1,6 +1,6 @@
 package com.example.demo.image;
 
-public enum Description {
+public enum Tag {
     //4veya5se verilebilir
     LOVELY("Lovely"),
     SWEET("Sweet"),
@@ -14,11 +14,11 @@ public enum Description {
     //1 veya 2yse verilebilir
     UGLY("Ugly"),
     POOR("Poor"),
-    BAD_PHYSIC("Bad Physic");
+    BAD_PHYSICS("Bad Physics");
 
     private final String notifier;
 
-    private Description(String notifier){
+    private Tag(String notifier){
         this.notifier = notifier;
     }
 

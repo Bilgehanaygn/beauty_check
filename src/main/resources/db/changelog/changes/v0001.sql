@@ -1,23 +1,6 @@
-create table "_product"(
-    id bigserial not null,
-    name varchar(50) not null,
-    primary key (id)
-);
-
-create table "_label"(
-    id bigserial not null,
-    description varchar(20),
-    primary key (id)
-);
-
-create table "product_attach_label"(
-    product_id bigserial not null,
-    label_id bigserial not null
-);
-
 create table "_user"(
-    id bigserial not null,
-    phone_num varchar(20) not null,
+    id bigint not null,
+    phone_num varchar(20) not null UNIQUE,
     name varchar(20),
     age INTEGER,
     otp varchar(255),
@@ -34,11 +17,11 @@ CREATE SEQUENCE _user_seq
     CACHE 10;
 
 create table "_token"(
-  id BIGSERIAL NOT NULL,
+  id bigint NOT NULL,
   token VARCHAR(255),
   revoked BOOLEAN,
   expired BOOLEAN,
-  user_id BIGSERIAL NOT NULL,
+  user_id bigint NOT NULL,
   FOREIGN KEY(user_id) REFERENCES _user (id),
   primary key (id)
 );

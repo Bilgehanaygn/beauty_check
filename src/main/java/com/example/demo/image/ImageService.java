@@ -11,8 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,7 +41,7 @@ public class ImageService {
 
 
         //if no error so far create image and save to image repo
-        Image image = new Image(null, user, imageName, null, null);
+        Image image = new Image(null, user, imageName, null, null, null, null);
 
         imageRepository.save(image);
 
@@ -55,16 +59,40 @@ public class ImageService {
     }
 
 
-    public String getImageAccessLink(String imageName){
-        User user = userService.getCurrentlyLoggedInUser();
-
-        Image image = imageRepository.findByName(imageName).orElseThrow(()->new EntityNotFoundException("ur_image_not_found"));
-
-        if(user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) &&  !image.getUser().equals(user)){
-            throw new AccessDeniedException("ur_unauthorized_request");
-        }
+    private String getImageAccessLink(String imageName){
+//        User user = userService.getCurrentlyLoggedInUser();
+//
+//        Image image = imageRepository.findByName(imageName).orElseThrow(()->new EntityNotFoundException("ur_image_not_found"));
+//
+//        if(user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) &&  !image.getUser().equals(user)){
+//            throw new AccessDeniedException("ur_unauthorized_request");
+//        }
 
         return s3Service.getTempLinkForImage(imageName);
+    }
+
+
+    public ImageViewModel getRandomImage(){
+        Image image = imageRepository.findRandomAwaitingImage().orElseThrow(()->new RuntimeException("Native Query Error in get random image"));
+        String accessLink = getImageAccessLink(image.getName());
+
+        return new ImageViewModel(image.getId().toString(), accessLink, null, null);
+    }
+
+
+    @Transactional
+    public MessageResponse rateAnImage(String imageId, ImageRateCommand imageRateCommand){
+        Image image = imageRepository.findById(Long.valueOf(imageId)).orElseThrow(()->new EntityNotFoundException("ur_image_not_found"));
+
+        image.setTags(
+                imageRateCommand.tags().stream().map(Tag::valueOf).toList()
+        );
+
+        image.setPoint(Point.valueOf(imageRateCommand.point()));
+
+//        imageRepository.save(image); throws error if transactional annotation is not included.
+
+        return new MessageResponse("ur_successfully_reviewed", MessageType.INFO);
     }
 
 }
