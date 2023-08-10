@@ -4,7 +4,7 @@ public enum Tag {
     //4veya5se verilebilir
     LOVELY("Lovely"),
     SWEET("Sweet"),
-    SEXY("Sexy"),
+    HOT("Hot"),
     PRETTY("Pretty"),
     COOL("Cool"),
 

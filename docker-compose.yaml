@@ -9,4 +9,6 @@ services:
       - POSTGRES_PASSWORD=q
       - POSTGRESQL_TIMEZONE=Europe/Istanbul
       - POSTGRES_INITDB_ARGS=--locale-provider=icu --icu-locale=tr-TR
+    volumes:
+      - C:\Users\Bilge\DockerPersistence\postgre\data:/bitnami/postgresql
     restart: always
