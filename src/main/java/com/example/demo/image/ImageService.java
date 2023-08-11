@@ -40,7 +40,7 @@ public class ImageService {
         s3Service.putImageToS3Bucket(imageName, file);
 
 
-        //if no error so far create image and save to image repo
+        //if no error so far create an image and save to image repo
         Image image = new Image(null, user, imageName, null, null, null, null);
 
         imageRepository.save(image);
@@ -93,6 +93,11 @@ public class ImageService {
 //        imageRepository.save(image); throws error if transactional annotation is not included.
 
         return new MessageResponse("ur_successfully_reviewed", MessageType.INFO);
+    }
+
+
+    public String testFunction(){
+        return "1";
     }
 
 }

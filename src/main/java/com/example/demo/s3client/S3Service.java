@@ -31,7 +31,7 @@ public class S3Service {
     private final String bucketName = "actualphotobucket";
 
 
-    public MessageResponse putImageToS3Bucket(String imageName, MultipartFile file){
+    public boolean putImageToS3Bucket(String imageName, MultipartFile file){
         // assume no chance of failing
         //generate an UUID image name with a trailing file format name
         PutObjectRequest objectRequest = PutObjectRequest.builder()
@@ -41,7 +41,7 @@ public class S3Service {
                 .build();
         try{
             instance.putObject(objectRequest, RequestBody.fromBytes(file.getBytes()));
-            return new MessageResponse("success", MessageType.INFO);
+            return true;
         }
         catch (IOException e){
             throw new RuntimeException(e);
