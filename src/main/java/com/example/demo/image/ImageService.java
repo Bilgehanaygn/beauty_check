@@ -7,29 +7,26 @@ import com.example.demo.s3client.S3Service;
 import com.example.demo.user.User;
 import com.example.demo.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class ImageService {
 
-    @Autowired
     private S3Service s3Service;
 
-    @Autowired
     private ImageRepository imageRepository;
 
-    @Autowired
     private UserService userService;
+
 
     public MessageResponse saveImage(MultipartFile file){
 
@@ -73,10 +70,12 @@ public class ImageService {
 
 
     public ImageViewModel getRandomImage(){
-        Image image = imageRepository.findRandomAwaitingImage().orElseThrow(()->new RuntimeException("Native Query Error in get random image"));
+//        Image image = imageRepository.findByStatus(Status.AWAITING).orElseThrow(()->new NoSuchElementException("Native Query Error in get random image. No such element."));
+
+        Image image = imageRepository.findRandomAwaitingImage().orElseThrow(()->new NoSuchElementException("Native Query Error in get random image. No such element."));
         String accessLink = getImageAccessLink(image.getName());
 
-        return new ImageViewModel(image.getId().toString(), accessLink, null, null);
+        return new ImageViewModel(image.getId(), accessLink, null, null);
     }
 
 
@@ -96,8 +95,8 @@ public class ImageService {
     }
 
 
-    public String testFunction(){
-        return "1";
+    public Optional<Image> findByName(String name){
+        return imageRepository.findByName(name);
     }
 
 }

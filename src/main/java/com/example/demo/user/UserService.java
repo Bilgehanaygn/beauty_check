@@ -40,11 +40,11 @@ public class UserService {
     }
 
     public User getCurrentlyLoggedInUser(){
-        UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String imageOwnerUsername = userDetails.getUsername(); //username of currently logged in user(the user sent the request)
-        User user = userRepository.findByPhoneNum(imageOwnerUsername).orElseThrow(() -> new EntityNotFoundException("ur_user_not_found"));
-
-        return user;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof String){
+            return null;
+        }
+        return (User)principal;
     }
 
 }
