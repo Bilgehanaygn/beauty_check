@@ -1,12 +1,27 @@
-pipelin {
+pipeline {
 //     agent any
-    docker {
-        image maven:3.9.3-eclipse-temurin-17-alpine
-        args '-v /root/.m2:/root/.m2'
-    }
     stages {
+        docker {
+            image maven:3.9.3-eclipse-temurin-17-alpine
+            args '-v /root/.m2:/root/.m2'
+        }
         stage('Build'){
-            sh 'mvn -B -DskipTests'
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+            }
+        }
+        stage('Test'){
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Deploy'){
+            agent any
+
+            steps{
+                sh 'docker-compose up -d'
+            }
         }
     }
 
