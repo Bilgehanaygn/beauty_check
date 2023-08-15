@@ -12,9 +12,9 @@ services:
 #    volumes:
 #      - C:\Users\Bilge\DockerPersistence\postgre\data:/bitnami/postgresql
     restart: always
-  web:
-    build: . #builds the local docker file
-    ports:
-      - "8000:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: demo
+#  web:
+#    build: . #builds the local docker file
+#    ports:
+#      - "8000:8080"
+#    environment:
+#      SPRING_PROFILES_ACTIVE: demo
