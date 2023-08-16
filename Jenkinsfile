@@ -4,6 +4,7 @@ pipeline {
         stage('Deploy'){
             agent any
             steps {
+                git(url: 'https://github.com/Bilgehanaygn/beauty_check', branch: 'master')
                 sh 'docker-compose up -d'
             }
         }
