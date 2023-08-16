@@ -2,7 +2,7 @@ pipeline {
     agent any
     stages {
         stage('Build'){
-            agent {
+            agent any {
                 docker {
                     image 'maven:3.9.3-eclipse-temurin-17-alpine'
                     args '-v /root/.m2:/root/.m2'
