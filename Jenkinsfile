@@ -1,13 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage('Deploy'){
-            agent any
-            steps {
-                git(url: 'https://github.com/Bilgehanaygn/beauty_check', branch: 'master')
-                sh 'docker-compose up -d'
-            }
-        }
         stage('Build'){
             agent{
                 docker {
@@ -19,6 +12,13 @@ pipeline {
                 git(url: 'https://github.com/Bilgehanaygn/beauty_check', branch: 'master')
                 sh 'mvn -B -DskipTests clean package'
                 sh 'mvn test'
+            }
+        }
+        stage('Deploy'){
+            agent none
+
+            steps{
+                sh 'docker-compose up -d'
             }
         }
     }
