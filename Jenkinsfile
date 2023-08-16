@@ -2,7 +2,7 @@ pipeline {
     agent any
     stages {
         stage('Build'){
-            agent any {
+            agent{
                 docker {
                     image 'maven:3.9.3-eclipse-temurin-17-alpine'
                     args '-v /root/.m2:/root/.m2'
@@ -12,7 +12,6 @@ pipeline {
                 git(url: 'https://github.com/Bilgehanaygn/beauty_check', branch: 'master')
                 sh 'mvn -B -DskipTests clean package'
                 sh 'mvn test'
-
             }
         }
 
