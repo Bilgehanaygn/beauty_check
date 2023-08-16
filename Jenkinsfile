@@ -1,6 +1,6 @@
 pipeline {
-//     agent any
     stages {
+        agent any
         stage('Checkout Code'){
             steps {
                 git(url: 'https://github.com/Bilgehanaygn/beauty_check', branch: 'master')
