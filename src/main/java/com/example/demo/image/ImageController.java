@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/image")
@@ -25,15 +26,22 @@ public class ImageController {
         return service.saveImage(command.file());
     }
 
-//    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_REVIEWER', 'ROLE_USER')")
-//    @GetMapping(value="/{imageId}")
-//    public ImageViewModel getTempLink(@PathVariable String imageId){
-//        return service.getImageAccessLink(imageId);
-//    }
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/awaitingImages")
+    public List<ImageViewModel> getAwaitingImagesForUser(){
 
+        return service.getAwaitingImagesForUser();
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/reviewedImages")
+    public List<ImageViewModel> getReviewedImagesForUser(){
+
+        return service.getReviewedImagesForUser();
+    }
 
     @PreAuthorize("hasRole('ROLE_REVIEWER')")
-    @GetMapping
+    @GetMapping("/randomImage")
     public ImageViewModel getRandomImage(){
 
         return service.getRandomImage();
@@ -45,4 +53,5 @@ public class ImageController {
     public MessageResponse rateAnImage(@PathVariable String imageId, @RequestBody ImageRateCommand imageRateCommand ){
         return service.rateAnImage(imageId, imageRateCommand);
     }
+
 }

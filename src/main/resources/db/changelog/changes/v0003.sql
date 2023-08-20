@@ -1,2 +1,4 @@
 INSERT INTO _user
-VALUES (1, '5078791747', null, null, '$2a$10$VBFLZ/WqsS5N98vmgMzCtOb/MmruVlovDnVoYjH83XrRAnRHlByCW', '2023-08-12', 0)
+VALUES (1, '5078791747', null, null, '$2a$10$VBFLZ/WqsS5N98vmgMzCtOb/MmruVlovDnVoYjH83XrRAnRHlByCW', '2023-08-12', 0);
+INSERT INTO _user
+VALUES (2, '5453908476', null, null, '$2a$10$N6kFtDHiFKiIJKbHakhaju60/QeUYOO3rUOdAlXZNJif32hUL9GQO', '2023-08-12', 1);

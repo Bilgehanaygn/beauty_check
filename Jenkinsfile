@@ -1,3 +1,9 @@
+properties([
+  parameters([
+    string(name: 'testParam', defaultValue: 'testParamValue')
+  ])
+])
+
 pipeline {
     agent any
     stages {
@@ -9,6 +15,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'echo ${params.testParam}'
                 git(url: 'https://github.com/Bilgehanaygn/beauty_check', branch: 'master')
                 sh 'mvn -B -DskipTests clean package'
                 sh 'mvn test'

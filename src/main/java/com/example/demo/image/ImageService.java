@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class ImageService {
 
 
         //if no error so far create an image and save to image repo
-        Image image = new Image(null, user, imageName, null, null, null, null);
+        Image image = new Image(null, user, imageName, null, null, null, Status.AWAITING);
 
         imageRepository.save(image);
 
@@ -70,7 +71,6 @@ public class ImageService {
 
 
     public ImageViewModel getRandomImage(){
-//        Image image = imageRepository.findByStatus(Status.AWAITING).orElseThrow(()->new NoSuchElementException("Native Query Error in get random image. No such element."));
 
         Image image = imageRepository.findRandomAwaitingImage().orElseThrow(()->new NoSuchElementException("Native Query Error in get random image. No such element."));
         String accessLink = getImageAccessLink(image.getName());
@@ -83,11 +83,9 @@ public class ImageService {
     public MessageResponse rateAnImage(String imageId, ImageRateCommand imageRateCommand){
         Image image = imageRepository.findById(Long.valueOf(imageId)).orElseThrow(()->new EntityNotFoundException("ur_image_not_found"));
 
-        image.setTags(
-                imageRateCommand.tags().stream().map(Tag::valueOf).toList()
-        );
-
+        image.setTags(imageRateCommand.tags().stream().map(Tag::valueOf).toList());
         image.setPoint(Point.valueOf(imageRateCommand.point()));
+        image.setStatus(Status.REVIEWED);
 
 //        imageRepository.save(image); throws error if transactional annotation is not included.
 
@@ -95,8 +93,31 @@ public class ImageService {
     }
 
 
-    public Optional<Image> findByName(String name){
-        return imageRepository.findByName(name);
+    public List<ImageViewModel> getAwaitingImagesForUser(){
+        Long userId = userService.getCurrentlyLoggedInUser().getId();
+
+        List<Image> images = imageRepository.findAllByUserIdAndStatus(userId, Status.AWAITING);
+
+        return images.stream().map(image->new ImageViewModel(
+               image.getId(),
+               getImageAccessLink(image.getName()),
+               null,
+               null
+        )).toList();
+    }
+
+    public List<ImageViewModel> getReviewedImagesForUser(){
+        Long userId = userService.getCurrentlyLoggedInUser().getId();
+
+        List<Image> images = imageRepository.findAllByUserIdAndStatus(userId, Status.REVIEWED);
+
+        return images.stream().map(image->new ImageViewModel(
+                image.getId(),
+                getImageAccessLink(image.getName()),
+                image.getPoint(),
+                image.getTags()
+        )).toList();
+
     }
 
 }

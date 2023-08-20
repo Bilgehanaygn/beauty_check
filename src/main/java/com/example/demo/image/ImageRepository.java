@@ -15,5 +15,5 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     @Query(value = "SELECT *  FROM _image WHERE _image.status=0 ORDER BY random() LIMIT 2", nativeQuery = true)
     public Optional<Image> findRandomAwaitingImage();
 
-    public List<Image> findAllByStatus(Status status);
+    public List<Image> findAllByUserIdAndStatus(Long userId, Status status);
 }
