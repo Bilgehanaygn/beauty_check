@@ -15,7 +15,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'echo ${params.testParam}'
+                echo "HERE IT IS: ${params.testParam}"
                 git(url: 'https://github.com/Bilgehanaygn/beauty_check', branch: 'master')
                 sh 'mvn -B -DskipTests clean package'
                 sh 'mvn test'
