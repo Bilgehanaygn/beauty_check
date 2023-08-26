@@ -18,7 +18,7 @@ pipeline {
                 }
             }
             steps {
-                git(url: 'https://github.com/Bilgehanaygn/beauty_check', branch: 'master', credentialsId: 'bilgehanaygn-github')
+                git(url: 'https://github.com/Bilgehanaygn/beauty_check.git', branch: 'master', credentialsId: 'bilgehanaygn-github')
                 sh 'mvn -B -DskipTests clean package'
                 sh 'mvn test'
             }
