@@ -29,10 +29,19 @@ pipeline {
             steps {
                 sh 'docker build -t bilgehanaygn/testrepo .'
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                    sh "docker login -u $USERNAME -p $PASSWORD"
-                }
+                    sh 'echo $USERNAME'
+                    sh 'echo ${USERNAME}'
+                    sh 'echo $PASSWORD'
+                    sh 'echo ${PASSWORD}'
+                    sh "docker login -u ${USERNAME} -p ${PASSWORD}"
                     sh 'docker push bilgehanaygn/testrepo'
+                }
             }
+        }
+    }
+    post {
+        always {
+            sh 'docker logout'
         }
     }
 
