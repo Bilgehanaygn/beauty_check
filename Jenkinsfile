@@ -6,8 +6,11 @@ properties([
 
 pipeline {
     agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    }
     stages {
-        stage('Build'){
+        stage('Build and Test'){
             agent{
                 docker {
                     image 'maven:3.9.3-eclipse-temurin-17-alpine'
@@ -15,7 +18,6 @@ pipeline {
                 }
             }
             steps {
-                echo "HERE IT IS: ${params.testParam}"
                 git(url: 'https://github.com/Bilgehanaygn/beauty_check', branch: 'master')
                 sh 'mvn -B -DskipTests clean package'
                 sh 'mvn test'
@@ -24,8 +26,10 @@ pipeline {
         stage('Deploy'){
             agent none
 
-            steps{
-                sh 'docker-compose up -d'
+            steps {
+                sh 'docker build -t bilgehanaygn/testrepo .'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push bilgehanaygn/testrepo'
             }
         }
     }

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Cascade;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class Image {
     @NotNull
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private User user;
 
     @NotNull
